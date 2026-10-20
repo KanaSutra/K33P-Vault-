@@ -318,42 +318,6 @@
       margin-bottom: 24px;
     }
 
-    .coupon-box {
-      background: rgba(0, 0, 0, 0.8);
-      border: 2px dashed var(--neon-gold);
-      border-radius: 8px;
-      padding: 16px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 24px;
-    }
-
-    .coupon-code {
-      font-family: 'Orbitron', monospace;
-      font-size: 24px;
-      color: var(--neon-gold);
-      font-weight: 900;
-      letter-spacing: 4px;
-    }
-
-    .copy-btn {
-      background: var(--neon-gold);
-      border: none;
-      color: #000;
-      font-family: 'Orbitron', sans-serif;
-      font-weight: 800;
-      padding: 10px 18px;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .copy-btn:hover {
-      box-shadow: 0 0 15px var(--neon-gold);
-      transform: scale(1.05);
-    }
-
     .exclusive-stream {
       background: rgba(0, 0, 0, 0.5);
       border: 1px solid rgba(0, 243, 255, 0.2);
@@ -377,13 +341,6 @@
       filter: invert(1) hue-rotate(180deg);
     }
 
-    .button-group {
-      display: flex;
-      gap: 12px;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-
     .btn-return {
       display: inline-block;
       background: transparent;
@@ -404,17 +361,6 @@
       background: var(--neon-cyan);
       color: #000;
       box-shadow: 0 0 18px var(--neon-cyan);
-    }
-
-    .btn-merch {
-      border-color: var(--neon-gold);
-      color: var(--neon-gold);
-    }
-
-    .btn-merch:hover {
-      background: var(--neon-gold);
-      color: #000;
-      box-shadow: 0 0 18px var(--neon-gold);
     }
   </style>
 </head>
@@ -481,18 +427,21 @@
         <h2 class="reward-title">ESCAPE ACCOMPLISHED</h2>
         <p class="reward-desc">Authorities neutralised by the Rex. Vault access unlocked for Kama Sutra King exclusives.</p>
 
-        <!-- 50% Off Reward -->
-        <div class="coupon-box">
+        <!-- Instant Unlocked Vault Pack Direct Download -->
+        <div style="border: 2px solid var(--neon-cyan); background: rgba(0, 243, 255, 0.05); border-radius: 8px; flex-direction: column; gap: 12px; text-align: center; padding: 20px; display: flex; margin-bottom: 18px;">
           <div>
-            <div style="font-size: 11px; color: #8fa0be; letter-spacing: 1px;">OFFICIAL MERCH PASS</div>
-            <div class="coupon-code" id="coupon-val">K33P50</div>
+            <div style="font-size: 11px; color: var(--neon-cyan); letter-spacing: 2px; font-weight: 800;">UNLOCKED VIP ACCESS PASS</div>
+            <div style="font-family: 'Orbitron', sans-serif; font-size: 18px; color: #fff; margin-top: 4px;">UNRELEASED AUDIO & ART PACK</div>
           </div>
-          <button class="copy-btn" onclick="copyCoupon()">COPY 50% OFF</button>
+          <a href="exclusive-vault-pack.zip" download style="display: inline-block; background: var(--neon-cyan); color: #000; font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 13px; letter-spacing: 2px; padding: 12px 24px; border-radius: 4px; text-decoration: none; box-shadow: 0 0 20px rgba(0, 243, 255, 0.4);">
+            DOWNLOAD VAULT PACK (.ZIP) &darr;
+          </a>
         </div>
+
         <!-- Merch Store CTA Button -->
-        <a href="https://merch.k33pitr3almuzic.monster" target="_blank" rel="noopener noreferrer" style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; width:100%; background:linear-gradient(90deg, #ffb700, #ff8800); color:#000; text-decoration:none; font-family:'Orbitron', sans-serif; font-weight:900; font-size:14px; letter-spacing:2px; padding:14px; border-radius:6px; margin: 15px 0 20px 0; box-shadow:0 0 25px rgba(255,183,0,0.45);">
-          <span>CLAIM AT OFFICIAL STORE</span>
-          <span style="font-size:11px; color:#000; font-weight:700;">merch.k33pitr3almuzic.monster &rarr;</span>
+        <a href="https://merch.keepitrealmusic.monster" target="_blank" rel="noopener noreferrer" style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; width:100%; background:linear-gradient(90deg, #ffb700, #ff8800); color:#000; text-decoration:none; font-family:'Orbitron', sans-serif; font-weight:900; font-size:14px; letter-spacing:2px; padding:14px; border-radius:6px; margin-bottom: 20px; box-shadow:0 0 25px rgba(255,183,0,0.45);">
+          <span>CLAIM MERCH AT OFFICIAL STORE</span>
+          <span style="font-size:11px; color:#000; font-weight:700;">merch.keepitrealmusic.monster &rarr;</span>
         </a>
 
         <!-- Exclusive Music Stream -->
@@ -504,10 +453,7 @@
           </audio>
         </div>
 
-        <div class="button-group">
-          <a href="https://merch.k33pitr3almuzic.monster" class="btn-return btn-merch">REDEEM MERCH DISCOUNT</a>
-          <a href="https://www.k33pitr3almuzic.monster" class="btn-return">VISIT OFFICIAL HUB</a>
-        </div>
+        <a href="https://www.k33pitr3almuzic.monster" class="btn-return">VISIT OFFICIAL K33P iT R3AL HUB</a>
       </div>
     </div>
 
@@ -607,15 +553,6 @@
       cinemaPlayer.pause();
 
       terminal.classList.remove("hidden");
-    }
-
-    function copyCoupon() {
-      const code = document.getElementById("coupon-val").innerText;
-      navigator.clipboard.writeText(code).then(() => {
-        const btn = document.querySelector(".copy-btn");
-        btn.innerText = "COPIED!";
-        setTimeout(() => (btn.innerText = "COPY 50% OFF"), 2000);
-      });
     }
   </script>
 </body>
