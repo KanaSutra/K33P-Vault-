@@ -438,16 +438,16 @@
           </a>
         </div>
 
-        <!-- Merch Store CTA Button -->
-        <a href="https://merch.keepitrealmusic.monster" target="_blank" rel="noopener noreferrer" style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; width:100%; background:linear-gradient(90deg, #ffb700, #ff8800); color:#000; text-decoration:none; font-family:'Orbitron', sans-serif; font-weight:900; font-size:14px; letter-spacing:2px; padding:14px; border-radius:6px; margin-bottom: 20px; box-shadow:0 0 25px rgba(255,183,0,0.45);">
+        <!-- Merch Store CTA Button (Updated URL) -->
+        <a href="https://merch.k33pitr3almuzic.monster" target="_blank" rel="noopener noreferrer" style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; width:100%; background:linear-gradient(90deg, #ffb700, #ff8800); color:#000; text-decoration:none; font-family:'Orbitron', sans-serif; font-weight:900; font-size:14px; letter-spacing:2px; padding:14px; border-radius:6px; margin-bottom: 20px; box-shadow:0 0 25px rgba(255,183,0,0.45);">
           <span>CLAIM MERCH AT OFFICIAL STORE</span>
-          <span style="font-size:11px; color:#000; font-weight:700;">merch.keepitrealmusic.monster &rarr;</span>
+          <span style="font-size:11px; color:#000; font-weight:700;">merch.k33pitr3almuzic.monster &rarr;</span>
         </a>
 
         <!-- Exclusive Music Stream -->
         <div class="exclusive-stream">
           <div class="stream-header">NOW PLAYING: UNRELEASED VIP VAULT LEAK</div>
-          <audio controls controlsList="nodownload" oncontextmenu="return false;">
+          <audio id="vault-audio" controls controlsList="nodownload" oncontextmenu="return false;">
             <source src="exclusive-track.mp3" type="audio/mpeg" />
             Your browser does not support audio playback.
           </audio>
@@ -536,6 +536,12 @@
 
       cinemaPlayer.onended = () => {
         victoryModal.classList.add("active");
+
+        const track = document.getElementById("vault-audio");
+        if (track) {
+          track.currentTime = 0;
+          track.play().catch(e => console.log("Autoplay waiting for direct interaction:", e));
+        }
       };
     }
 
@@ -544,6 +550,12 @@
       victoryModal.classList.remove("active");
       currentInput = "";
       updateDisplay();
+
+      const track = document.getElementById("vault-audio");
+      if (track) {
+        track.pause();
+        track.currentTime = 0;
+      }
       
       hudStatus.textContent = "STANDBY // ESCAPE OVERRIDE READY";
       hudStatus.style.color = "var(--neon-cyan)";
