@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>K33P iT R3AL MUZIC | Vault Escape Terminal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;800;900&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --neon-cyan: #00f3ff;
+      --neon-pink: #ff0055;
+      --neon-green: #00ff66;
+      --neon-gold: #ffb700;
+      --bg-dark: #07090e;
+      --panel-bg: rgba(13, 17, 23, 0.88);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: #fff;
+      font-family: 'Rajdhani', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow-x: hidden;
+    }
+
+    /* Screen Frame & Video Viewport */
+    .viewport-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      max-width: 1280px;
+      max-height: 720px;
+      background: #000;
+      overflow: hidden;
+      border: 2px solid rgba(0, 243, 255, 0.25);
+      box-shadow: 0 0 50px rgba(0, 243, 255, 0.15), inset 0 0 30px rgba(0, 0, 0, 0.8);
+    }
+
+    @media (min-width: 1280px) {
+      .viewport-container {
+        border-radius: 12px;
+        margin: 20px 0;
+        height: 80vh;
+      }
+    }
+
+    /* Video Player Layer */
+    #cinema-player {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      background: #000;
+    }
+
+    /* HUD Overlay Layer */
+    .hud-overlay {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 24px;
+      z-index: 10;
+    }
+
+    .scanlines {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.35) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.04), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.04));
+      background-size: 100% 3px, 4px 100%;
+      pointer-events: none;
+      z-index: 12;
+    }
+
+    .hud-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'Orbitron', monospace;
+      font-size: 13px;
+      letter-spacing: 2px;
+      color: var(--neon-cyan);
+      text-shadow: 0 0 8px var(--neon-cyan);
+    }
+
+    .hud-status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(0, 243, 255, 0.1);
+      padding: 6px 14px;
+      border: 1px solid var(--neon-cyan);
+      border-radius: 4px;
+    }
+
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--neon-cyan);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--neon-cyan);
+      animation: pulse 1s infinite alternate;
+    }
+
+    @keyframes pulse {
+      from { opacity: 0.3; }
+      to { opacity: 1; }
+    }
+
+    /* Interactive Terminal Overlay (Center) */
+    .interactive-gate {
+      position: absolute;
+      inset: 0;
+      background: rgba(5, 7, 12, 0.82);
+      backdrop-filter: blur(8px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 20;
+      transition: opacity 0.4s ease, visibility 0.4s ease;
+      pointer-events: auto;
+    }
+
+    .interactive-gate.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .terminal-box {
+      width: 90%;
+      max-width: 440px;
+      background: var(--panel-bg);
+      border: 2px solid var(--neon-cyan);
+      box-shadow: 0 0 35px rgba(0, 243, 255, 0.25);
+      border-radius: 10px;
+      padding: 30px;
+      text-align: center;
+    }
+
+    .terminal-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 18px;
+      color: #fff;
+      letter-spacing: 3px;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+
+    .terminal-subtitle {
+      font-size: 13px;
+      color: #8fa0be;
+      margin-bottom: 22px;
+      letter-spacing: 1px;
+    }
+
+    .code-display {
+      width: 100%;
+      height: 52px;
+      background: rgba(0, 0, 0, 0.75);
+      border: 1.5px solid rgba(0, 243, 255, 0.4);
+      border-radius: 6px;
+      color: var(--neon-cyan);
+      font-family: 'Orbitron', monospace;
+      font-size: 24px;
+      letter-spacing: 8px;
+      text-align: center;
+      line-height: 52px;
+      margin-bottom: 20px;
+      box-shadow: inset 0 0 15px rgba(0, 243, 255, 0.2);
+    }
+
+    .keypad-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .keypad-btn {
+      background: rgba(18, 26, 38, 0.9);
+      border: 1px solid rgba(0, 243, 255, 0.3);
+      color: #fff;
+      font-family: 'Orbitron', monospace;
+      font-size: 18px;
+      font-weight: 700;
+      padding: 14px 0;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .keypad-btn:hover {
+      background: var(--neon-cyan);
+      color: #000;
+      box-shadow: 0 0 15px var(--neon-cyan);
+      transform: translateY(-2px);
+    }
+
+    .keypad-btn.action-btn {
+      background: rgba(255, 0, 85, 0.15);
+      border-color: var(--neon-pink);
+      color: var(--neon-pink);
+    }
+
+    .keypad-btn.action-btn:hover {
+      background: var(--neon-pink);
+      color: #fff;
+      box-shadow: 0 0 15px var(--neon-pink);
+    }
+
+    .submit-btn {
+      width: 100%;
+      background: linear-gradient(90deg, #00d2ff, var(--neon-cyan));
+      border: none;
+      color: #000;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      font-size: 15px;
+      letter-spacing: 2px;
+      padding: 15px;
+      border-radius: 6px;
+      cursor: pointer;
+      box-shadow: 0 0 25px rgba(0, 243, 255, 0.4);
+      transition: all 0.2s ease;
+    }
+
+    .submit-btn:hover {
+      transform: scale(1.02);
+      box-shadow: 0 0 35px var(--neon-cyan);
+    }
+
+    /* Post-Sequence Modals */
+    .modal-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(7, 9, 14, 0.92);
+      backdrop-filter: blur(12px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 30;
+      padding: 24px;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+      pointer-events: none;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    /* Failure Modal */
+    .busted-card {
+      border: 2px solid var(--neon-pink);
+      box-shadow: 0 0 45px rgba(255, 0, 85, 0.35);
+      max-width: 460px;
+      width: 100%;
+      background: var(--panel-bg);
+      border-radius: 10px;
+      padding: 30px;
+      text-align: center;
+    }
+
+    .busted-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 26px;
+      color: var(--neon-pink);
+      letter-spacing: 3px;
+      margin-bottom: 12px;
+      text-shadow: 0 0 15px var(--neon-pink);
+    }
+
+    /* VIP Reward Panel (Victory) */
+    .reward-card {
+      border: 2px solid var(--neon-green);
+      box-shadow: 0 0 50px rgba(0, 255, 102, 0.3);
+      max-width: 620px;
+      width: 100%;
+      background: var(--panel-bg);
+      border-radius: 12px;
+      padding: 32px;
+      text-align: center;
+    }
+
+    .reward-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 26px;
+      color: var(--neon-green);
+      letter-spacing: 3px;
+      margin-bottom: 8px;
+      text-shadow: 0 0 15px var(--neon-green);
+    }
+
+    .reward-desc {
+      color: #a7bed3;
+      font-size: 15px;
+      margin-bottom: 24px;
+    }
+
+    .coupon-box {
+      background: rgba(0, 0, 0, 0.8);
+      border: 2px dashed var(--neon-gold);
+      border-radius: 8px;
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .coupon-code {
+      font-family: 'Orbitron', monospace;
+      font-size: 24px;
+      color: var(--neon-gold);
+      font-weight: 900;
+      letter-spacing: 4px;
+    }
+
+    .copy-btn {
+      background: var(--neon-gold);
+      border: none;
+      color: #000;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 800;
+      padding: 10px 18px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .copy-btn:hover {
+      box-shadow: 0 0 15px var(--neon-gold);
+      transform: scale(1.05);
+    }
+
+    .exclusive-stream {
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(0, 243, 255, 0.2);
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 24px;
+      text-align: left;
+    }
+
+    .stream-header {
+      font-size: 12px;
+      font-family: 'Orbitron', monospace;
+      color: var(--neon-cyan);
+      margin-bottom: 10px;
+      letter-spacing: 1px;
+    }
+
+    audio {
+      width: 100%;
+      outline: none;
+      filter: invert(1) hue-rotate(180deg);
+    }
+
+    .button-group {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-return {
+      display: inline-block;
+      background: transparent;
+      border: 1px solid var(--neon-cyan);
+      color: var(--neon-cyan);
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 2px;
+      padding: 12px 24px;
+      border-radius: 4px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .btn-return:hover {
+      background: var(--neon-cyan);
+      color: #000;
+      box-shadow: 0 0 18px var(--neon-cyan);
+    }
+
+    .btn-merch {
+      border-color: var(--neon-gold);
+      color: var(--neon-gold);
+    }
+
+    .btn-merch:hover {
+      background: var(--neon-gold);
+      color: #000;
+      box-shadow: 0 0 18px var(--neon-gold);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="viewport-container">
+    <div class="scanlines"></div>
+
+    <!-- HUD Overlay -->
+    <div class="hud-overlay">
+      <div class="hud-header">
+        <div class="hud-status-badge">
+          <div class="pulse-dot"></div>
+          <span id="hud-status">STANDBY // ESCAPE OVERRIDE READY</span>
+        </div>
+        <div>FREQ: 104.7 MHz // K33P iT R3AL MUZIC</div>
+      </div>
+    </div>
+
+    <!-- Video Viewport -->
+    <video id="cinema-player" preload="auto" playsinline>
+      <source src="wrong_code.mp4" type="video/mp4" />
+    </video>
+
+    <!-- Keypad Input Gate -->
+    <div class="interactive-gate" id="gate-terminal">
+      <div class="terminal-box">
+        <h2 class="terminal-title">Vault Keypad Gate</h2>
+        <p class="terminal-subtitle">ENTER THE SECRET ACCESS CODE TO SUMMON ESCAPE PROTOCOL</p>
+        
+        <div class="code-display" id="display-input">----</div>
+
+        <div class="keypad-grid">
+          <button class="keypad-btn" onclick="pressKey('1')">1</button>
+          <button class="keypad-btn" onclick="pressKey('2')">2</button>
+          <button class="keypad-btn" onclick="pressKey('3')">3</button>
+          <button class="keypad-btn" onclick="pressKey('4')">4</button>
+          <button class="keypad-btn" onclick="pressKey('5')">5</button>
+          <button class="keypad-btn" onclick="pressKey('6')">6</button>
+          <button class="keypad-btn" onclick="pressKey('7')">7</button>
+          <button class="keypad-btn" onclick="pressKey('8')">8</button>
+          <button class="keypad-btn" onclick="pressKey('9')">9</button>
+          <button class="keypad-btn action-btn" onclick="clearInput()">CLR</button>
+          <button class="keypad-btn" onclick="pressKey('0')">0</button>
+          <button class="keypad-btn action-btn" onclick="deleteKey()">DEL</button>
+        </div>
+
+        <button class="submit-btn" onclick="verifyAccessCode()">TRANSMIT CODE</button>
+      </div>
+    </div>
+
+    <!-- Failure Screen: Wrong Code Sequence Completed -->
+    <div class="modal-overlay" id="failure-modal">
+      <div class="busted-card">
+        <h2 class="busted-title">ACCESS DENIED</h2>
+        <p style="color: #c3cad5; margin-bottom: 20px;">The interceptors locked onto the Mustang GT signal before the override was validated.</p>
+        <button class="submit-btn" style="background: var(--neon-pink); color: #fff;" onclick="resetTerminal()">RE-ATTEMPT ESCAPE</button>
+      </div>
+    </div>
+
+    <!-- Victory Screen: Right Code Sequence Completed -->
+    <div class="modal-overlay" id="victory-modal">
+      <div class="reward-card">
+        <h2 class="reward-title">ESCAPE ACCOMPLISHED</h2>
+        <p class="reward-desc">Authorities neutralised by the Rex. Vault access unlocked for Kama Sutra King exclusives.</p>
+
+        <!-- 50% Off Reward -->
+        <div class="coupon-box">
+          <div>
+            <div style="font-size: 11px; color: #8fa0be; letter-spacing: 1px;">OFFICIAL MERCH PASS</div>
+            <div class="coupon-code" id="coupon-val">K33P50</div>
+          </div>
+          <button class="copy-btn" onclick="copyCoupon()">COPY 50% OFF</button>
+        </div>
+
+        <!-- Exclusive Music Stream -->
+        <div class="exclusive-stream">
+          <div class="stream-header">NOW PLAYING: UNRELEASED VIP VAULT LEAK</div>
+          <audio controls controlsList="nodownload" oncontextmenu="return false;">
+            <source src="exclusive-track.mp3" type="audio/mpeg" />
+            Your browser does not support audio playback.
+          </audio>
+        </div>
+
+        <div class="button-group">
+          <a href="https://merch.k33pitr3almuzic.monster" class="btn-return btn-merch">REDEEM MERCH DISCOUNT</a>
+          <a href="https://www.k33pitr3almuzic.monster" class="btn-return">VISIT OFFICIAL HUB</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const VALID_CODES = ["1236", "420", "2026", "777", "1992"];
+    
+    let currentInput = "";
+    const displayElement = document.getElementById("display-input");
+    const terminal = document.getElementById("gate-terminal");
+    const cinemaPlayer = document.getElementById("cinema-player");
+    const hudStatus = document.getElementById("hud-status");
+    const failureModal = document.getElementById("failure-modal");
+    const victoryModal = document.getElementById("victory-modal");
+
+    function updateDisplay() {
+      displayElement.textContent = currentInput.padEnd(4, "-");
+    }
+
+    function pressKey(num) {
+      if (currentInput.length < 6) {
+        currentInput += num;
+        updateDisplay();
+      }
+    }
+
+    function clearInput() {
+      currentInput = "";
+      updateDisplay();
+    }
+
+    function deleteKey() {
+      currentInput = currentInput.slice(0, -1);
+      updateDisplay();
+    }
+
+    window.addEventListener("keydown", (e) => {
+      if (terminal.classList.contains("hidden")) return;
+      if (e.key >= "0" && e.key <= "9") pressKey(e.key);
+      if (e.key === "Backspace") deleteKey();
+      if (e.key === "Enter") verifyAccessCode();
+      if (e.key === "Escape") clearInput();
+    });
+
+    function verifyAccessCode() {
+      if (!currentInput) return;
+
+      const isCorrect = VALID_CODES.includes(currentInput.trim());
+
+      terminal.classList.add("hidden");
+
+      if (isCorrect) {
+        triggerRightCodeSequence();
+      } else {
+        triggerWrongCodeSequence();
+      }
+    }
+
+    function triggerWrongCodeSequence() {
+      hudStatus.textContent = "ALERT // INVALID OVERRIDE DETECTED";
+      hudStatus.style.color = "var(--neon-pink)";
+
+      cinemaPlayer.src = "wrong_code.mp4";
+      cinemaPlayer.currentTime = 0;
+      cinemaPlayer.play();
+
+      cinemaPlayer.onended = () => {
+        failureModal.classList.add("active");
+      };
+    }
+
+    function triggerRightCodeSequence() {
+      hudStatus.textContent = "CONFIRMED // APEX BACKUP SUMMONED";
+      hudStatus.style.color = "var(--neon-green)";
+
+      cinemaPlayer.src = "right_code.mp4";
+      cinemaPlayer.currentTime = 0;
+      cinemaPlayer.play();
+
+      cinemaPlayer.onended = () => {
+        victoryModal.classList.add("active");
+      };
+    }
+
+    function resetTerminal() {
+      failureModal.classList.remove("active");
+      victoryModal.classList.remove("active");
+      currentInput = "";
+      updateDisplay();
+      
+      hudStatus.textContent = "STANDBY // ESCAPE OVERRIDE READY";
+      hudStatus.style.color = "var(--neon-cyan)";
+
+      cinemaPlayer.src = "wrong_code.mp4";
+      cinemaPlayer.currentTime = 0;
+      cinemaPlayer.pause();
+
+      terminal.classList.remove("hidden");
+    }
+
+    function copyCoupon() {
+      const code = document.getElementById("coupon-val").innerText;
+      navigator.clipboard.writeText(code).then(() => {
+        const btn = document.querySelector(".copy-btn");
+        btn.innerText = "COPIED!";
+        setTimeout(() => (btn.innerText = "COPY 50% OFF"), 2000);
+      });
+    }
+  </script>
+</body>
+</html>
